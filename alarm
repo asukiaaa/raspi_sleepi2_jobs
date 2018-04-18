@@ -1,0 +1,62 @@
+#!/bin/bash
+VERSION="1.0"
+
+DEFAULT_LATER_THAN="+3min"
+USAGE="Example:
+  ./alarm --set-eariest \"01:00JST, 13:00JST, 14:00JST\" # default: --later-than $DEFAULT_LATER_THAN
+  ./alarm --set-eariest \"01:00JST, 13:00JST, 14:00JST\" --later-than +10min
+"
+
+case $1 in
+  -se|--set-eariest)
+    LATER_THAN=`date +%s -d $DEFAULT_LATER_THAN`
+    case $3 in
+      -lt|--later-than)
+        NEW_LATER_THAN=`date +%s -d "$4"`
+        if (( $LATER_THAN < $NEW_LATER_THAN ))
+        then
+            LATER_THAN=$NEW_LATER_THAN
+        fi
+      ;;
+    esac
+    ALARM_TIMES=()
+    for TIME_STR in ${2//,/ }
+    do
+      ALARM_TIME=`date +%s -d "$TIME_STR"`
+      if (( $ALARM_TIME <= $LATER_THAN ))
+      then
+          ALARM_TIME=`date +%s -d "tomorrow $TIME_STR"`
+      fi
+      if (( $ALARM_TIME > $LATER_THAN ))
+      then
+          ALARM_TIMES+=($ALARM_TIME)
+      fi
+    done
+    EARIEST=${ALARM_TIMES[0]}
+    for TIME in ${ALARM_TIMES[@]}
+    do
+      if (( $TIME < $EARIEST ))
+      then
+          EARIEST=$TIME
+      fi
+    done
+    echo $EARIEST
+    EARIEST_STR=`date -u +"%F %T UTC" -d @$EARIEST`
+    #echo $EARIEST_STR
+    echo set \"$EARIEST_STR\"
+    echo `date +%s -d "$EARIEST_STR"`
+    sleepi2alarm --set "$EARIEST_STR"
+    ;;
+  -v|--version)
+    echo "alarm version $VERSION"
+    ;;
+  *)
+    echo "$USAGE"
+    ;;
+esac
+
+if [ $? -ne 0 ]
+then
+    echo "error: command failure" >&2
+    exit 1
+fi
