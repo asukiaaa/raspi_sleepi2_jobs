@@ -41,7 +41,7 @@ sudo apt install -y sleepi2-firmware sleepi2-utils sleepi2-monitor
 
 ## alarm
 
-Add alarm command to `/etc/rc.local` before `exit 1` like this.
+Add alarm command to `/etc/rc.local` before `exit 0` like this.
 
 ```
 {
