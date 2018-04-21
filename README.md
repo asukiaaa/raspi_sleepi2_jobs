@@ -64,7 +64,19 @@ Add alarm command to `/etc/rc.local` before `exit 0` like this.
 
 Raspberry Pi will wake up at 01:00JST, 13:00JST or 14:00JST.
 
+# Memo for commands
+
+## Post volgate of battery for [thingspeak](https://thingspeak.com/).
+
+```
+THINGSPEAK_API_KEY="your api key"
+VOLTAGE=`sleepi2ctl --get voltage`
+curl -X GET https://api.thingspeak.com/update -d "api_key=$THINGSPEAK_API_KEY" -d "field1=$VOLTAGE"
+```
+
 # References
 - [mechatrax/slee-pi2](https://github.com/mechatrax/slee-pi2)
 - [mechatrax/sleepi2-utils](https://github.com/mechatrax/sleepi2-utils)
+- [sleepi2-utils](https://github.com/mechatrax/sleepi2-utils)
 - [sleepi2alarm](https://github.com/mechatrax/sleepi2-utils/blob/master/sleepi2alarm)
+- [Post Temperature Data and Read from Channel](https://jp.mathworks.com/help/thingspeak/read-and-post-temperature-data.html)
